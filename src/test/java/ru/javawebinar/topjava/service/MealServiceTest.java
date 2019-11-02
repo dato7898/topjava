@@ -1,7 +1,14 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -25,6 +32,28 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    @Rule
+    public TestName name = new TestName();
+
+    @Rule
+    public TestWatcher testLogger = new TestWatcher() {
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
+        private long start;
+
+        @Override
+        public void starting(Description description) {
+            start = System.currentTimeMillis();
+        }
+
+        @Override
+        public void finished(Description description) {
+            log.info("Test method name \'{}\', time elapsed {} ms", name.getMethodName(), (System.currentTimeMillis() - start));
+        }
+    };
+
     @Autowired
     private MealService service;
 
@@ -34,13 +63,17 @@ public class MealServiceTest {
         assertMatch(service.getAll(USER_ID), MEAL6, MEAL5, MEAL4, MEAL3, MEAL2);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteNotFound() throws Exception {
+        thrown.expect(NotFoundException.class);
+        thrown.expectMessage("Not found entity with id=1");
         service.delete(1, USER_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteNotOwn() throws Exception {
+        thrown.expect(NotFoundException.class);
+        thrown.expectMessage("Not found entity with id=" + MEAL1_ID);
         service.delete(MEAL1_ID, ADMIN_ID);
     }
 
@@ -59,13 +92,17 @@ public class MealServiceTest {
         assertMatch(actual, ADMIN_MEAL1);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getNotFound() throws Exception {
+        thrown.expect(NotFoundException.class);
+        thrown.expectMessage("Not found entity with id=1");
         service.get(1, USER_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getNotOwn() throws Exception {
+        thrown.expect(NotFoundException.class);
+        thrown.expectMessage("Not found entity with id=" + MEAL1_ID);
         service.get(MEAL1_ID, ADMIN_ID);
     }
 
@@ -76,8 +113,10 @@ public class MealServiceTest {
         assertMatch(service.get(MEAL1_ID, USER_ID), updated);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateNotFound() throws Exception {
+        thrown.expect(NotFoundException.class);
+        thrown.expectMessage("Not found entity with id=" + MEAL1_ID);
         service.update(MEAL1, ADMIN_ID);
     }
 
