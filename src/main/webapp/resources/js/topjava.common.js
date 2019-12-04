@@ -77,3 +77,20 @@ function failNoty(jqXHR) {
         layout: "bottomRight"
     }).show();
 }
+
+function updateTableByData(data) {
+    context.datatableApi.clear().rows.add(data).draw();
+}
+
+function updateFilteredTable() {
+    $.ajax({
+        type: "GET",
+        url: context.ajaxUrl + "filter",
+        data: $("#filter").serialize()
+    }).done(updateTableByData);
+}
+
+function clearFilter() {
+    $("#filter")[0].reset();
+    $.get(context.ajaxUrl, updateTableByData);
+}
