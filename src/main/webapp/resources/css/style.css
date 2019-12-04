@@ -23,6 +23,11 @@ tr[data-mealExcess="true"] {
     color: red;
 }
 
+tr[data-userenabled="false"] {
+    opacity: 0.3;
+    !important;
+}
+
 .fa {
     cursor: pointer;
 }

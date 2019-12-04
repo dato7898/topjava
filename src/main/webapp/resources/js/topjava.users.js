@@ -1,3 +1,18 @@
+const userAjaxUrl = "ajax/admin/users/";
+
+function enable(checkbox, id) {
+    const enabled = checkbox.is(":checked");
+    $.ajax({
+        url: userAjaxUrl + id,
+        type: "POST",
+        data: "enabled=" + enabled
+    }).done(function () {
+        checkbox.closest("tr").attr("data-userEnabled", enabled);
+        successNoty(enabled ? "common.enabled" : "common.disabled");
+    }).fail(function () {
+        $(checkbox).prop("checked", !enabled);
+    });
+}
 // $(document).ready(function () {
 $(function () {
     makeEditable({

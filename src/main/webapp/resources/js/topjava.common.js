@@ -1,13 +1,8 @@
-var context, form;
+let context, form;
 
 function makeEditable(ctx) {
     context = ctx;
     form = $('#detailsForm');
-    $(".delete").click(function () {
-        if (confirm('Are you sure?')) {
-            deleteRow($(this).attr("id"));
-        }
-    });
 
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
         failNoty(jqXHR);
@@ -23,13 +18,15 @@ function add() {
 }
 
 function deleteRow(id) {
-    $.ajax({
-        url: context.ajaxUrl + id,
-        type: "DELETE"
-    }).done(function () {
-        updateTable();
-        successNoty("Deleted");
-    });
+    if (confirm('Are you sure?')) {
+        $.ajax({
+            url: context.ajaxUrl + id,
+            type: "DELETE"
+        }).done(function () {
+            updateTable();
+            successNoty("Deleted");
+        });
+    }
 }
 
 function updateTable() {
@@ -80,17 +77,4 @@ function failNoty(jqXHR) {
 
 function updateTableByData(data) {
     context.datatableApi.clear().rows.add(data).draw();
-}
-
-function updateFilteredTable() {
-    $.ajax({
-        type: "GET",
-        url: context.ajaxUrl + "filter",
-        data: $("#filter").serialize()
-    }).done(updateTableByData);
-}
-
-function clearFilter() {
-    $("#filter")[0].reset();
-    $.get(context.ajaxUrl, updateTableByData);
 }

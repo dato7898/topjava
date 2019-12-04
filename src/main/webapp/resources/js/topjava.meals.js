@@ -1,6 +1,21 @@
+const mealAjaxUrl = "ajax/profile/meals/";
+
+function updateFilteredTable() {
+    $.ajax({
+        type: "GET",
+        url: context.ajaxUrl + "filter",
+        data: $("#filter").serialize()
+    }).done(updateTableByData);
+}
+
+function clearFilter() {
+    $("#filter")[0].reset();
+    $.get(context.ajaxUrl, updateTableByData);
+}
+
 $(function () {
     makeEditable({
-            ajaxUrl: "ajax/profile/meals/",
+            ajaxUrl: mealAjaxUrl,
             datatableApi: $("#datatable").DataTable({
                 "paging": false,
                 "info": true,
