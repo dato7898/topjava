@@ -6,6 +6,7 @@ import ru.javawebinar.topjava.HasId;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import javax.naming.Binding;
 import javax.validation.*;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -83,5 +84,11 @@ public class ValidationUtil {
                         .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
                         .collect(Collectors.joining("<br>"))
         );
+    }
+
+    public static String getDescription(BindingResult result) {
+        StringBuilder sb = new StringBuilder();
+        result.getFieldErrors().forEach(fe -> sb.append(fe.getField()).append(" ").append(fe.getDefaultMessage()).append("<br>"));
+        return sb.toString();
     }
 }
